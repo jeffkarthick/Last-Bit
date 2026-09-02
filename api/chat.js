@@ -69,8 +69,9 @@ Rules:
       }
     ];
 
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.1-8b-instant",
+    const completion = await 
+      model: "openai/gpt-oss-20b", 
+        
       messages,
       temperature: 0.8,
       max_tokens: 500
