@@ -1,0 +1,14 @@
+{
+  "name": "whatsapp-ai-chat",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "groq-sdk": "^0.30.0"
+  },
+  "devDependencies": {
+    "vercel": "^48.0.0"
+  }
+}
