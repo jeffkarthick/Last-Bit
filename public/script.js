@@ -1,16 +1,9 @@
 let personalityProfile = null;
-
 let chatHistory = [];
 
-
-const fileInput =
-  document.getElementById("fileInput");
-
-const analyzeBtn =
-  document.getElementById("analyzeBtn");
-
-const status =
-  document.getElementById("status");
+const fileInput = document.getElementById("fileInput");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const status = document.getElementById("status");
 
 const analysisSection =
   document.getElementById("analysisSection");
@@ -34,23 +27,50 @@ const sendBtn =
   document.getElementById("sendBtn");
 
 
-/* -----------------------------
-   ANALYZE CHAT
------------------------------ */
+// ============================
+// FILE SELECT
+// ============================
+
+fileInput.addEventListener("change", () => {
+
+  const file = fileInput.files[0];
+
+  if (!file) {
+    status.textContent = "";
+    return;
+  }
+
+  console.log("Selected file:", file.name);
+
+  if (!file.name.toLowerCase().endsWith(".txt")) {
+
+    status.textContent =
+      "❌ Please select a .txt file.";
+
+    fileInput.value = "";
+
+    return;
+  }
+
+  status.textContent =
+    `✅ Selected: ${file.name}`;
+
+});
+
+
+// ============================
+// ANALYZE
+// ============================
 
 analyzeBtn.addEventListener("click", async () => {
 
   const file = fileInput.files[0];
 
   if (!file) {
-    status.textContent =
-      "Please select a WhatsApp .txt file.";
-    return;
-  }
 
-  if (!file.name.endsWith(".txt")) {
     status.textContent =
-      "Only .txt files are supported.";
+      "❌ முதலில் WhatsApp TXT file select பண்ணு.";
+
     return;
   }
 
@@ -59,18 +79,28 @@ analyzeBtn.addEventListener("click", async () => {
     analyzeBtn.disabled = true;
 
     status.textContent =
-      "🧠 Reading and analyzing chat...";
+      "📖 Reading WhatsApp chat...";
 
-    const text =
-      await file.text();
+    // Read TXT file
+    const text = await file.text();
 
-    if (!text.trim()) {
-      throw new Error("File is empty.");
+    console.log("File size:", text.length);
+
+    if (!text || !text.trim()) {
+
+      throw new Error(
+        "TXT file empty-ஆ இருக்கு."
+      );
+
     }
 
-    const response =
-      await fetch("/api/analyze", {
+    status.textContent =
+      "🧠 Sending chat to AI...";
 
+
+    const response = await fetch(
+      "/api/analyze",
+      {
         method: "POST",
 
         headers: {
@@ -80,8 +110,8 @@ analyzeBtn.addEventListener("click", async () => {
         body: JSON.stringify({
           chat: text
         })
-
-      });
+      }
+    );
 
 
     const data =
@@ -89,9 +119,12 @@ analyzeBtn.addEventListener("click", async () => {
 
 
     if (!response.ok) {
+
       throw new Error(
-        data.error || "Analysis failed"
+        data.error ||
+        "AI analysis failed"
       );
+
     }
 
 
@@ -108,8 +141,9 @@ analyzeBtn.addEventListener("click", async () => {
       "hidden"
     );
 
+
     status.textContent =
-      "✅ Analysis completed.";
+      "✅ Chat analyzed successfully!";
 
   }
 
@@ -131,9 +165,9 @@ analyzeBtn.addEventListener("click", async () => {
 });
 
 
-/* -----------------------------
-   DISPLAY ANALYSIS
------------------------------ */
+// ============================
+// SHOW ANALYSIS
+// ============================
 
 function showAnalysis(profile) {
 
@@ -166,8 +200,7 @@ function showAnalysis(profile) {
 
 
   if (
-    profile.interests &&
-    profile.interests.length
+    Array.isArray(profile.interests)
   ) {
 
     addItem(
@@ -179,8 +212,7 @@ function showAnalysis(profile) {
 
 
   if (
-    profile.common_topics &&
-    profile.common_topics.length
+    Array.isArray(profile.common_topics)
   ) {
 
     addItem(
@@ -192,8 +224,7 @@ function showAnalysis(profile) {
 
 
   if (
-    profile.important_patterns &&
-    profile.important_patterns.length
+    Array.isArray(profile.important_patterns)
   ) {
 
     addItem(
@@ -214,21 +245,29 @@ function addItem(title, value) {
   div.className =
     "analysis-item";
 
-  div.innerHTML = `
-    <strong>${escapeHtml(title)}</strong>
-    <div>${escapeHtml(
-      String(value || "Unknown")
-    )}</div>
-  `;
+  const titleElement =
+    document.createElement("strong");
+
+  titleElement.textContent =
+    title;
+
+  const valueElement =
+    document.createElement("div");
+
+  valueElement.textContent =
+    value || "Unknown";
+
+  div.appendChild(titleElement);
+  div.appendChild(valueElement);
 
   analysis.appendChild(div);
 
 }
 
 
-/* -----------------------------
-   START CHAT
------------------------------ */
+// ============================
+// START CHAT
+// ============================
 
 startChatBtn.addEventListener(
   "click",
@@ -248,9 +287,9 @@ startChatBtn.addEventListener(
 );
 
 
-/* -----------------------------
-   SEND MESSAGE
------------------------------ */
+// ============================
+// SEND CHAT
+// ============================
 
 sendBtn.addEventListener(
   "click",
@@ -260,7 +299,7 @@ sendBtn.addEventListener(
 
 messageInput.addEventListener(
   "keydown",
-  event => {
+  (event) => {
 
     if (event.key === "Enter") {
       sendMessage();
@@ -278,7 +317,13 @@ async function sendMessage() {
   if (!message) return;
 
   if (!personalityProfile) {
+
+    alert(
+      "First analyze a WhatsApp chat."
+    );
+
     return;
+
   }
 
 
@@ -303,27 +348,30 @@ async function sendMessage() {
   try {
 
     const response =
-      await fetch("/api/chat", {
+      await fetch(
+        "/api/chat",
+        {
+          method: "POST",
 
-        method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+          body: JSON.stringify({
 
-        body: JSON.stringify({
+            profile:
+              personalityProfile,
 
-          profile:
-            personalityProfile,
+            message,
 
-          message,
+            history:
+              chatHistory.slice(-8)
 
-          history:
-            chatHistory.slice(-8)
+          })
 
-        })
-
-      });
+        }
+      );
 
 
     const data =
@@ -331,9 +379,12 @@ async function sendMessage() {
 
 
     if (!response.ok) {
+
       throw new Error(
-        data.error || "Chat failed"
+        data.error ||
+        "Chat failed"
       );
+
     }
 
 
@@ -381,9 +432,9 @@ async function sendMessage() {
 }
 
 
-/* -----------------------------
-   ADD MESSAGE
------------------------------ */
+// ============================
+// MESSAGE
+// ============================
 
 function addMessage(
   type,
@@ -405,22 +456,5 @@ function addMessage(
     messages.scrollHeight;
 
   return div;
-
-}
-
-
-/* -----------------------------
-   SECURITY
------------------------------ */
-
-function escapeHtml(text) {
-
-  const div =
-    document.createElement("div");
-
-  div.textContent =
-    text;
-
-  return div.innerHTML;
 
 }
