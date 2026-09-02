@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>WhatsApp AI</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <header>
+      <div class="logo">💬</div>
+
+      <div>
+        <h1>WhatsApp AI</h1>
+        <p>Analyze a chat and talk with its AI personality</p>
+      </div>
+    </header>
+
+
+    <!-- UPLOAD -->
+
+    <section class="card" id="uploadSection">
+
+      <h2>Upload WhatsApp Chat</h2>
+
+      <p class="description">
+        Export your WhatsApp conversation as a
+        <b>.txt</b> file and upload it here.
+      </p>
+
+      <label class="upload">
+
+        <input
+          type="file"
+          id="fileInput"
+          accept=".txt"
+        >
+
+        <span>📄 Choose WhatsApp TXT file</span>
+
+      </label>
+
+      <button id="analyzeBtn">
+        🧠 Analyze Chat
+      </button>
+
+      <div id="status"></div>
+
+    </section>
+
+
+    <!-- ANALYSIS -->
+
+    <section
+      class="card hidden"
+      id="analysisSection"
+    >
+
+      <h2>🧠 Personality Analysis</h2>
+
+      <div id="analysis"></div>
+
+      <button id="startChatBtn">
+        💬 Start AI Chat
+      </button>
+
+    </section>
+
+
+    <!-- CHAT -->
+
+    <section
+      class="chat-card hidden"
+      id="chatSection"
+    >
+
+      <div class="chat-header">
+
+        <div>
+          <h2>AI Personality</h2>
+          <span>● Online</span>
+        </div>
+
+      </div>
+
+
+      <div
+        id="messages"
+        class="messages"
+      >
+
+        <div class="message ai">
+          Hey 👋 Chat with me.
+        </div>
+
+      </div>
+
+
+      <div class="input-area">
+
+        <input
+          id="messageInput"
+          type="text"
+          placeholder="Type a message..."
+          autocomplete="off"
+        >
+
+        <button id="sendBtn">
+          ➤
+        </button>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
